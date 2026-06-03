@@ -20,4 +20,6 @@ struct Option {
     void run(ConsoleHelper* console) {
         action(console);
     }
+
+    int lua_callback_ref;
 };

@@ -5,29 +5,114 @@
 #include <functional>
 #include <string>
 #include <vector>
+#include <filesystem>
+#include <fstream>
 
 #include <ansi_terminal.hpp>
 #include <consolerandom.hpp>
 #include <console.hpp>
 #include <option.hpp>
 #include <internal_options.hpp>
+#include <plugins.hpp>
+#include <pluginregistry.hpp>
+
+#include <lua.h>
+#include <lualib.h>
+
+const std::filesystem::path PluginsDir = "./Plugins";
+const std::vector<std::string> PluginExtensions = {
+    ".luau", ".lua", ".luauc", ".luac"
+};
+std::vector<MoonhookPlugin> UserPlugins = {};
 
 int main()
 {
+    std::filesystem::create_directories(PluginsDir);
+
     ansi::enableANSI();
     if (!ansi::supportsColor())
     {
         std::cout << "Your terminal does not support ANSI, please use a different terminal emulator to get better output.\n";
     }
 
+    const std::string& MoonhookBanner = ConsoleRandom::GetBanner();
+    const ansi::Gradient& MainGradient = ConsoleRandom::GetGradient();
+    ConsoleHelper console(MainGradient, MoonhookBanner);
+
+    if (!std::filesystem::is_empty(PluginsDir))
+    {
+        console.log("Getting plugins...");
+    
+        for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(PluginsDir))
+        {
+            std::string ext = entry.path().extension().string();
+            if (std::find(PluginExtensions.begin(), PluginExtensions.end(), ext) == PluginExtensions.end())
+                continue;
+
+            int type = 0;
+            if (ext == ".luauc" || ext == ".luac")
+            {
+                type = 1;
+            }
+            
+            std::ifstream plugin_file(entry.path().string());
+            if (!plugin_file.is_open())
+            {
+                console.log("Failed to read plugin file: "+entry.path().string());
+                ansi::pause();
+                continue;
+            }
+            std::stringstream buff;
+            buff << plugin_file.rdbuf();
+            std::string content = buff.str();
+            
+            UserPlugins.push_back(MoonhookPlugin(content, type));
+            console.log("Added plugin: "+entry.path().string());
+        }
+    }
+
+    std::vector<Option> plugin_opts = {};
+
+    if (!UserPlugins.empty())
+    {
+        console.log("Loading plugins...");
+        
+        lua_State* L = luaL_newstate();
+        PluginEnvironment::install(L);
+
+        for (MoonhookPlugin& plugin : UserPlugins)
+        {
+            std::string result = plugin.get_bytecode();
+            if (result.empty())
+            {
+                console.error("Plugin compile error: " + plugin.last_error());
+                continue;
+            }
+
+            if (luau_load(L, "plugin", result.data(), result.size(), 0) != LUA_OK)
+            {
+                console.error("Plugin load error: " + std::string(lua_tostring(L, -1)));
+                lua_pop(L, 1);
+                continue;
+            }
+
+            if (lua_pcall(L, 0, 0, 0) != LUA_OK)
+            {
+                console.error("Plugin runtime error: " + std::string(lua_tostring(L, -1)));
+                lua_pop(L, 1);
+                continue;
+            }
+        }
+
+        plugin_opts = Registry::Get().GetOptions();
+        console.log("Loaded " + std::to_string(plugin_opts.size()) + " plugin options.");
+        
+        lua_close(L);
+    }
+
     while (true) 
     {
         ansi::clearConsole();
-
-        const std::string& MoonhookBanner = ConsoleRandom::GetBanner();
-        const ansi::Gradient& MainGradient = ConsoleRandom::GetGradient();
-        ConsoleHelper console(MainGradient, MoonhookBanner);
-
         console.printbanner();
         
         std::cout << "----------------------------------------------------------------\n";
