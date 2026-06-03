@@ -17,7 +17,11 @@ set(LUAU_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(luau)
 
 set(CURL_ENABLE_SSL ON CACHE BOOL "" FORCE)
-set(CURL_USE_SCHANNEL ON CACHE BOOL "" FORCE)
+if(WIN32)
+    set(CURL_USE_SCHANNEL ON CACHE BOOL "" FORCE)
+else()
+    set(CURL_USE_OPENSSL ON CACHE BOOL "" FORCE)
+endif()
 
 FetchContent_Declare(
     curl
