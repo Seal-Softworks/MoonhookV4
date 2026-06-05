@@ -1,3 +1,5 @@
+#include <unordered_map>
+
 #include <plugins.hpp>
 #include <option.hpp>
 #include <pluginregistry.hpp>
@@ -59,6 +61,54 @@ std::string MoonhookPlugin::get_bytecode()
 std::string MoonhookPlugin::last_error()
 {
     return last_err;
+}
+
+std::optional<MoonhookPlugin::PluginHeader> MoonhookPlugin::parse_plugin_header()
+{
+    const std::string start_tag = "--!plugin";
+    const std::string end_tag = "--!end";
+
+    std::size_t start_pos = content.find(start_tag);
+    if (start_pos == std::string::npos) return std::nullopt;
+
+    std::size_t block_start = start_pos + start_tag.size();
+    std::size_t end_pos = content.find(end_tag);
+    if (end_pos == std::string::npos) return std::nullopt;
+
+    std::string block = content.substr(block_start, end_pos - block_start);
+
+    std::unordered_map<std::string, std::string> fields;
+    std::istringstream stream(block);
+    std::string line;
+
+    while (std::getline(stream, line))
+    {
+        std::size_t colon = line.find(':');
+        if (colon = std::string::npos) continue;
+
+        std::string key = line.substr(0, colon);
+        std::string value = line.substr(colon + 1);
+
+        auto trim = [](std::string& s) {
+            size_t start = s.find_first_not_of(" \t\r\n");
+            size_t end   = s.find_last_not_of(" \t\r\n");
+            s = (start == std::string::npos) ? "" : s.substr(start, end - start + 1);
+        };
+
+        trim(key);
+        trim(value);
+
+        if (!key.empty() && !value.empty())
+            fields[key] = value;
+    }
+
+    PluginHeader header;
+    if (fields.count("Name")) header.name = fields["Name"];
+    if (fields.count("Description")) header.description = fields["Description"];
+    if (fields.count("Author")) header.author = fields["Author"];
+    if (fields.count("Version")) header.version = fields["Version"];
+
+    return header;
 }
 
 namespace option_index
