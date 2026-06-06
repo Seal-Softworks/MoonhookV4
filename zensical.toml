@@ -1,0 +1,41 @@
+[project]
+site_name = "Moonhook V4 - Docs"
+site_description = "Documentation for Moonhook V4."
+site_author = "Seal Softworks"
+copyright = "&copy; 2026 Seal Softworks"
+docs_dir = "docs"
+site_dir = "site"
+repo_url = "https://github.com/Seal-Softworks/MoonhookV4"
+repo_name = "Moonhook V4"
+
+nav = [
+    { "Home" = "index.md" },
+    { "Installation" = [
+        { "Windows" = "installation/windows.md" },
+        { "Other" = "installation/other.md" }
+    ] },
+    { "Plugin Manual" = [
+        { "Getting Started" = "pluginmanual/getting_started.md" },
+        { "API Reference" = "pluginmanual/apireference.md" }
+    ] }
+]
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: light)"
+scheme = "default"
+toggle.icon = "lucide/sun"
+toggle.name = "Switch to dark mode"
+accent = "deep purple"
+primary = "deep purple"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: dark)"
+scheme = "slate"
+toggle.icon = "lucide/moon"
+toggle.name = "Switch to light mode"
+accent = "deep purple"
+primary = "deep purple"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/github"
+link = "https://github.com/Seal-Softworks"
