@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./logo.png" alt="Moonhook Logo" width="150" />
+  <img src="./assets/logo.png" alt="Moonhook Logo" width="150" />
 
   # Moonhook V4
 
@@ -9,6 +9,14 @@
 </div>
 
 Moonhook V4 is a complete rewrite of [Moonhook V3](https://github.com/U-235Consumer/MoonhookV3) in C++. It retains all of the original Discord utility and automation features while adding a **Luau plugin system** that lets you extend and add new options without touching the core codebase.
+
+## UI Preview
+
+<img src="./assets/ImgMain.png" alt="Moonhook V4 Main Menu" width="400">
+<img src="./assets/ImgWebhooks.png" alt="Moonhook V4 Main Menu" width="400">
+<div align="center">
+  <img src="./assets/ImgBots.png" alt="Moonhook V4 Main Menu" width="400">
+</div>
 
 ## Features
 
