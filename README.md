@@ -12,10 +12,12 @@ Moonhook V4 is a complete rewrite of [Moonhook V3](https://github.com/U-235Consu
 
 ## UI Preview
 
-<img src="./assets/ImgMain.png" alt="Moonhook V4 Main Menu" width="400">
-<img src="./assets/ImgWebhooks.png" alt="Moonhook V4 Main Menu" width="400">
-<div align="center">
-  <img src="./assets/ImgBots.png" alt="Moonhook V4 Main Menu" width="400">
+<div>
+  <img src="./assets/ImgMain.png" alt="Moonhook V4 Main Menu" width="400">
+  <img src="./assets/ImgWebhooks.png" alt="Moonhook V4 Main Menu" width="400">
+  <div align="center">
+    <img src="./assets/ImgBots.png" alt="Moonhook V4 Main Menu" width="400">
+  </div>
 </div>
 
 ## Features
