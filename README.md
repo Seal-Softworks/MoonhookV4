@@ -20,6 +20,8 @@ Moonhook V4 is a complete rewrite of [Moonhook V3](https://github.com/U-235Consu
   </div>
 </div>
 
+The colors, gradients and banners are randomized.
+
 ## Features
 
 **Webhooks**
